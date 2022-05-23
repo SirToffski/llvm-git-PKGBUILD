@@ -79,15 +79,17 @@ build() {
         -D LLVM_BUILD_LLVM_DYLIB=ON \
         -D LLVM_LINK_LLVM_DYLIB=ON \
         -D LLVM_INSTALL_UTILS=ON \
-        -D LLVM_BUILD_DOCS=ON \
+        -D LLVM_BUILD_DOCS=OFF \
         -D LLVM_ENABLE_DOXYGEN=OFF \
         -D LLVM_ENABLE_SPHINX=ON \
         -D SPHINX_OUTPUT_HTML:BOOL=OFF \
         -D SPHINX_WARNINGS_AS_ERRORS=OFF \
         -D POLLY_ENABLE_GPGPU_CODEGEN=ON \
         -D LLDB_USE_SYSTEM_SIX=1 \
-        -D LLVM_ENABLE_PROJECTS="polly;lldb;lld;compiler-rt;clang-tools-extra;clang" \
+        -D LLVM_ENABLE_PROJECTS="polly;lldb;lld;compiler-rt;clang-tools-extra;clang;openmp" \
+        -DCLANG_LINK_CLANG_DYLIB=ON \
         -D LLVM_LIT_ARGS="-sv --ignore-fail" \
+        -D LLVM_USE_LINKER=lld \
         -Wno-dev
 
     ninja -C _build $NINJAFLAGS
@@ -109,10 +111,10 @@ package_llvm-git() {
     optdepends=('python: for scripts'
                 'python-setuptools: for using lit = LLVM Integrated Tester'
     )
-    provides=(aur-llvm-git compiler-rt-git clang-git lldb-git lld-git polly-git
-              llvm compiler-rt clang lldb polly lld )
+    provides=('aur-llvm-git' 'compiler-rt-git' 'clang-git' 'lldb-git' 'lld-git' 'polly-git'
+              'llvm' 'compiler-rt' 'clang' 'lldb' 'polly' 'lld' 'openmp')
     # A package always provides itself, so there's no need to provide llvm-git
-    conflicts=('llvm' 'compiler-rt' 'clang' 'lldb' 'polly' 'lld')
+    conflicts=('llvm' 'compiler-rt' 'clang' 'lldb' 'polly' 'lld' 'openmp')
     
     DESTDIR="$pkgdir" ninja -C _build $NINJAFLAGS install
 
@@ -167,6 +169,7 @@ package_llvm-git() {
     install -Dm644 lld/LICENSE.TXT "$pkgdir"/usr/share/licenses/$pkgname/lld-LICENSE
     install -Dm644 lldb/LICENSE.TXT "$pkgdir"/usr/share/licenses/$pkgname/lldb-LICENSE
     install -Dm644 polly/LICENSE.TXT "$pkgdir"/usr/share/licenses/$pkgname/polly-LICENSE
+    install -Dm644 openmp/LICENSE.TXT "$pkgdir"/usr/share/licenses/$pkgname/openmp-LICENSE
 }
 
 package_llvm-libs-git() {
