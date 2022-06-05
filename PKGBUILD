@@ -60,26 +60,47 @@ pkgver() {
 }
 
 build() {
-    
+    export CC=clang
+    export CXX=clang++
+    export AR=llvm-ar
+    export AS=llvm-as
+    export NM=llvm-nm
+    export STRIP=llvm-strip
+    export OBJCOPY=llvm-objcopy
+    export OBJDUMP=llvm-objdump
+    export READELF=llvm-readelf
+    export HOSTCC=clang
+    export HOSTCXX=clang++
+    export HOSTAR=llvm-ar
+    export DEBUG_CFLAGS="-g"
+    export DEBUG_CXXFLAGS="-g"
+
+    export LD=ld.lld
+    export CC_LD=lld
+    export CXX_LD=lld
+    export HOSTLD=ld.lld
+
+    cd "${srcdir}/llvm-project" || exit
+
     export CFLAGS+=" ${CPPFLAGS}"
     export CXXFLAGS+=" ${CPPFLAGS}"
     cmake \
         -B _build \
-        -S "$srcdir"/llvm-project/llvm  \
+        -S llvm  \
         -G Ninja \
         -D CMAKE_BUILD_TYPE=Release \
         -D CMAKE_INSTALL_PREFIX=/usr \
         -D LLVM_BINUTILS_INCDIR=/usr/include \
         -D LLVM_APPEND_VC_REV=ON \
         -D LLVM_VERSION_SUFFIX="" \
-        -D LLVM_HOST_TRIPLE=$CHOST \
+        -DLLVM_HOST_TRIPLE="${CHOST:?}" \
         -D LLVM_ENABLE_RTTI=ON \
         -D LLVM_ENABLE_FFI=ON \
         -D FFI_INCLUDE_DIR:PATH="$(pkg-config --variable=includedir libffi)" \
         -D LLVM_BUILD_LLVM_DYLIB=ON \
         -D LLVM_LINK_LLVM_DYLIB=ON \
         -D LLVM_INSTALL_UTILS=ON \
-        -D LLVM_BUILD_DOCS=OFF \
+        -D LLVM_BUILD_DOCS=ON \
         -D LLVM_ENABLE_DOXYGEN=OFF \
         -D LLVM_ENABLE_SPHINX=ON \
         -D SPHINX_OUTPUT_HTML:BOOL=OFF \
@@ -87,8 +108,8 @@ build() {
         -D POLLY_ENABLE_GPGPU_CODEGEN=ON \
         -D LLDB_USE_SYSTEM_SIX=1 \
         -D LLVM_ENABLE_PROJECTS="polly;lldb;lld;compiler-rt;clang-tools-extra;clang" \
-        -D CLANG_LINK_CLANG_DYLIB=ON \
         -D LLVM_LIT_ARGS="-sv --ignore-fail" \
+        -D CLANG_LINK_CLANG_DYLIB=ON \
         -D LLVM_USE_LINKER=lld \
         -Wno-dev
 
@@ -111,8 +132,8 @@ package_llvm-git() {
     optdepends=('python: for scripts'
                 'python-setuptools: for using lit = LLVM Integrated Tester'
     )
-    provides=('aur-llvm-git' 'compiler-rt-git' 'clang-git' 'lldb-git' 'lld-git' 'polly-git'
-              'llvm' 'compiler-rt' 'clang' 'lldb' 'polly' 'lld')
+    provides=(aur-llvm-git compiler-rt-git clang-git lldb-git lld-git polly-git
+              llvm compiler-rt clang lldb polly lld )
     # A package always provides itself, so there's no need to provide llvm-git
     conflicts=('llvm' 'compiler-rt' 'clang' 'lldb' 'polly' 'lld')
     
