@@ -87,7 +87,7 @@ build() {
         -D POLLY_ENABLE_GPGPU_CODEGEN=ON \
         -D LLDB_USE_SYSTEM_SIX=1 \
         -D LLVM_ENABLE_PROJECTS="polly;lldb;lld;compiler-rt;clang-tools-extra;clang" \
-        -DCLANG_LINK_CLANG_DYLIB=ON \
+        -D CLANG_LINK_CLANG_DYLIB=ON \
         -D LLVM_LIT_ARGS="-sv --ignore-fail" \
         -D LLVM_USE_LINKER=lld \
         -Wno-dev
