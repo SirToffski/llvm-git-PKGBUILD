@@ -135,9 +135,9 @@ package_llvm-git() {
                 'python-setuptools: for using lit = LLVM Integrated Tester'
     )
     provides=(aur-llvm-git compiler-rt-git clang-git lldb-git lld-git polly-git
-              llvm compiler-rt clang lldb polly lld )
+              llvm compiler-rt clang lldb polly lld libc++ libc++-git libc++abi libc++abi-git libc++experimental libc++experimental-git)
     # A package always provides itself, so there's no need to provide llvm-git
-    conflicts=('llvm' 'compiler-rt' 'clang' 'lldb' 'polly' 'lld')
+    conflicts=('llvm' 'compiler-rt' 'clang' 'lldb' 'polly' 'lld' 'libc++' 'libc++abi' 'libc++experimental')
     
     DESTDIR="$pkgdir" ninja -C _build $NINJAFLAGS install
 
@@ -192,6 +192,8 @@ package_llvm-git() {
     install -Dm644 lld/LICENSE.TXT "$pkgdir"/usr/share/licenses/$pkgname/lld-LICENSE
     install -Dm644 lldb/LICENSE.TXT "$pkgdir"/usr/share/licenses/$pkgname/lldb-LICENSE
     install -Dm644 polly/LICENSE.TXT "$pkgdir"/usr/share/licenses/$pkgname/polly-LICENSE
+    install -Dm644 libcxx/LICENSE.TXT "$pkgdir"/usr/share/licenses/$pkgname/libcxx-LICENSE
+    install -Dm644 libcxxabi/LICENSE.TXT "$pkgdir"/usr/share/licenses/$pkgname/libcxxabi-LICENSE
 }
 
 package_llvm-libs-git() {
@@ -219,6 +221,8 @@ package_llvm-libs-git() {
     install -Dm644 lld/LICENSE.TXT "$pkgdir"/usr/share/licenses/$pkgname/lld-LICENSE
     install -Dm644 lldb/LICENSE.TXT "$pkgdir"/usr/share/licenses/$pkgname/lldb-LICENSE
     install -Dm644 polly/LICENSE.TXT "$pkgdir"/usr/share/licenses/$pkgname/polly-LICENSE
+    install -Dm644 libcxx/LICENSE.TXT "$pkgdir"/usr/share/licenses/$pkgname/libcxx-LICENSE
+    install -Dm644 libcxxabi/LICENSE.TXT "$pkgdir"/usr/share/licenses/$pkgname/libcxxabi-LICENSE
 }
 
 package_llvm-ocaml-git() {
