@@ -110,6 +110,8 @@ build() {
         -D LLVM_ENABLE_PROJECTS="polly;lldb;lld;compiler-rt;clang-tools-extra;clang" \
         -D LLVM_LIT_ARGS="-sv --ignore-fail" \
         -D CLANG_LINK_CLANG_DYLIB=ON \
+        -D LLVM_ENABLE_RUNTIMES="libcxx;libcxxabi;libunwind" \
+        -D LIBCXX_ENABLE_INCOMPLETE_FEATURES=ON \
         -D LLVM_USE_LINKER=lld \
         -Wno-dev
 
