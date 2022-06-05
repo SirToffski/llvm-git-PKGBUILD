@@ -93,7 +93,7 @@ build() {
         -D LLVM_BINUTILS_INCDIR=/usr/include \
         -D LLVM_APPEND_VC_REV=ON \
         -D LLVM_VERSION_SUFFIX="" \
-        -DLLVM_HOST_TRIPLE="${CHOST:?}" \
+        -D LLVM_HOST_TRIPLE="${CHOST:?}" \
         -D LLVM_ENABLE_RTTI=ON \
         -D LLVM_ENABLE_FFI=ON \
         -D FFI_INCLUDE_DIR:PATH="$(pkg-config --variable=includedir libffi)" \
