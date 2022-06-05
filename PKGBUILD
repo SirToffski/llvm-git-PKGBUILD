@@ -80,13 +80,11 @@ build() {
     export CXX_LD=lld
     export HOSTLD=ld.lld
 
-    cd "${srcdir}/llvm-project" || exit
-
     export CFLAGS+=" ${CPPFLAGS}"
     export CXXFLAGS+=" ${CPPFLAGS}"
     cmake \
         -B _build \
-        -S llvm  \
+        -S "$srcdir"/llvm-project/llvm  \
         -G Ninja \
         -D CMAKE_BUILD_TYPE=Release \
         -D CMAKE_INSTALL_PREFIX=/usr \
