@@ -16,15 +16,15 @@
 
 
 pkgname=('llvm-git' 'llvm-libs-git' 'llvm-ocaml-git')
-pkgver=14.0.0_r413047.c703d77a61ac
+pkgver=15.0.0_r426767.0ce33c294118
 pkgrel=1
 arch=('x86_64')
 url="https://llvm.org/"
 license=('custom:Apache 2.0 with LLVM Exception')
 makedepends=('git' 'cmake' 'ninja' 'libffi' 'libedit' 'ncurses' 'libxml2' 'python-sphinx'
-             'python-sphinx-automodapi' 'lldb' 'ocaml' 'ocaml-ctypes' 'ocaml-findlib'
+             'python-sphinx-automodapi' 'ocaml' 'ocaml-ctypes' 'ocaml-findlib'
              'python-sphinx' 'python-recommonmark' 'swig' 'python' 'python-six' 'lua53'
-             'ocl-icd' 'opencl-headers' 'z3' 'jsoncpp')
+             'ocl-icd' 'opencl-headers' 'z3' 'jsoncpp' 'llvm-git' 'llvm-libs-git')
 checkdepends=("python-psutil")
 source=("llvm-project::git+https://github.com/llvm/llvm-project.git"
         "llvm-config.h")
@@ -60,6 +60,7 @@ pkgver() {
 }
 
 build() {
+
     export CC=clang
     export CXX=clang++
     export AR=llvm-ar
@@ -79,7 +80,8 @@ build() {
     export CC_LD=lld
     export CXX_LD=lld
     export HOSTLD=ld.lld
-
+    _extra_build_flags="-DLLVM_USE_LINKER=lld"
+    
     export CFLAGS+=" ${CPPFLAGS}"
     export CXXFLAGS+=" ${CPPFLAGS}"
     cmake \
@@ -91,7 +93,7 @@ build() {
         -D LLVM_BINUTILS_INCDIR=/usr/include \
         -D LLVM_APPEND_VC_REV=ON \
         -D LLVM_VERSION_SUFFIX="" \
-        -D LLVM_HOST_TRIPLE="${CHOST:?}" \
+        -D LLVM_HOST_TRIPLE=$CHOST \
         -D LLVM_ENABLE_RTTI=ON \
         -D LLVM_ENABLE_FFI=ON \
         -D FFI_INCLUDE_DIR:PATH="$(pkg-config --variable=includedir libffi)" \
@@ -107,9 +109,6 @@ build() {
         -D LLDB_USE_SYSTEM_SIX=1 \
         -D LLVM_ENABLE_PROJECTS="polly;lldb;lld;compiler-rt;clang-tools-extra;clang" \
         -D LLVM_LIT_ARGS="-sv --ignore-fail" \
-        -D CLANG_LINK_CLANG_DYLIB=ON \
-        -D LLVM_ENABLE_RUNTIMES="libcxx;libcxxabi;libunwind" \
-        -D LIBCXX_ENABLE_INCOMPLETE_FEATURES=ON \
         -D LLVM_USE_LINKER=lld \
         -Wno-dev
 
