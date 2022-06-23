@@ -26,8 +26,9 @@ makedepends=('git' 'cmake' 'ninja' 'libffi' 'libedit' 'ncurses' 'libxml2' 'pytho
              'python-sphinx' 'python-recommonmark' 'swig' 'python' 'python-six' 'lua53'
              'ocl-icd' 'opencl-headers' 'z3' 'jsoncpp' 'llvm-git' 'llvm-libs-git')
 checkdepends=("python-psutil")
-_gitcommit="8a87f42fc6ca14d13454465490dbf47333918907"
-source=("llvm-project::git+https://github.com/llvm/llvm-project.git#commit=${_gitcommit}"
+#_gitcommit="8a87f42fc6ca14d13454465490dbf47333918907"
+#source=("llvm-project::git+https://github.com/llvm/llvm-project.git#commit=${_gitcommit}"
+source=("llvm-project::git+https://github.com/llvm/llvm-project.git"
         "llvm-config.h")
 
 md5sums=('SKIP'
