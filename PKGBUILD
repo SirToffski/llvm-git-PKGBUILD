@@ -22,7 +22,7 @@ arch=('x86_64')
 url="https://llvm.org/"
 license=('custom:Apache 2.0 with LLVM Exception')
 makedepends=('git' 'cmake' 'ninja' 'libffi' 'libedit' 'ncurses' 'libxml2' 'python-sphinx'
-             'python-sphinx-automodapi' 'ocaml' 'ocaml-ctypes' 'ocaml-findlib'
+             'python-sphinx-automodapi' 'ocaml' 'ocaml-ctypes' 'ocaml-findlib' 'ocaml-stdlib-shims'
              'python-sphinx' 'python-recommonmark' 'swig' 'python' 'python-six' 'lua53'
              'ocl-icd' 'opencl-headers' 'z3' 'jsoncpp' 'llvm-git' 'llvm-libs-git')
 checkdepends=("python-psutil")
@@ -102,10 +102,9 @@ build() {
         -D LLVM_BUILD_LLVM_DYLIB=ON \
         -D LLVM_LINK_LLVM_DYLIB=ON \
         -D LLVM_INSTALL_UTILS=ON \
-        -D LLVM_BUILD_DOCS=OFF \
+        -D LLVM_BUILD_DOCS=ON \
         -D LLVM_ENABLE_DOXYGEN=OFF \
-        -D LLVM_ENABLE_SPHINX=OFF \
-        -D LLVM_ENABLE_OCAMLDOC=OFF \
+        -D LLVM_ENABLE_SPHINX=ON \
         -D SPHINX_OUTPUT_HTML:BOOL=OFF \
         -D SPHINX_WARNINGS_AS_ERRORS=OFF \
         -D POLLY_ENABLE_GPGPU_CODEGEN=ON \
