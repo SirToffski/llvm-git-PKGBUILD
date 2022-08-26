@@ -24,7 +24,7 @@ license=('custom:Apache 2.0 with LLVM Exception')
 makedepends=('git' 'cmake' 'ninja' 'libffi' 'libedit' 'ncurses' 'libxml2' 'python-sphinx'
              'python-sphinx-automodapi' 'ocaml' 'ocaml-ctypes' 'ocaml-findlib' 'ocaml-stdlib-shims'
              'python-sphinx' 'python-recommonmark' 'swig' 'python' 'python-six' 'lua53'
-             'ocl-icd' 'opencl-headers' 'z3' 'jsoncpp' 'llvm-git' 'llvm-libs-git')
+             'ocl-icd' 'opencl-headers' 'z3' 'jsoncpp' 'llvm-git' 'llvm-libs-git' 'python-setuptools')
 checkdepends=("python-psutil")
 #_gitcommit="8a87f42fc6ca14d13454465490dbf47333918907"
 #source=("llvm-project::git+https://github.com/llvm/llvm-project.git#commit=${_gitcommit}"
