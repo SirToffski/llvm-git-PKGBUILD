@@ -40,6 +40,7 @@ options=('staticlibs')
 # NINJAFLAGS is an env var used to pass commandline options to ninja
 # NOTE: It's your responbility to validate the value of $NINJAFLAGS. If unsure, don't set it.
 # NINJAFLAGS="-j20"
+NINJAFLAGS="-j$(nproc)"
 
 _python_optimize() {
   python -m compileall "$@"
