@@ -20,11 +20,11 @@ pkgver=15.0.0_r426767.0ce33c294118
 pkgrel=1
 arch=('x86_64')
 url="https://llvm.org/"
-license=('custom:Apache 2.0 with LLVM Exception')
-makedepends=('git' 'cmake' 'ninja' 'libffi' 'libedit' 'ncurses' 'libxml2' 'python-sphinx'
-             'python-sphinx-automodapi' 'ocaml' 'ocaml-ctypes' 'ocaml-findlib' 'ocaml-stdlib-shims'
+license=('custom:Apache 2.0 with LLVM Exception')            
+makedepends=('git' 'cmake' 'ninja' 'libffi' 'libedit' 'ncurses' 'libxml2' 
+             'python-setuptools' 'ocaml' 'ocaml-ctypes' 'ocaml-findlib'
              'python-sphinx' 'python-recommonmark' 'swig' 'python' 'python-six' 'lua53'
-             'ocl-icd' 'opencl-headers' 'z3' 'jsoncpp' 'llvm-git' 'llvm-libs-git' 'python-setuptools')
+             'ocl-icd' 'opencl-headers' 'z3' 'jsoncpp' 'ocaml-stdlib-shims' 'llvm-git' 'llvm-libs-git')
 checkdepends=("python-psutil")
 #_gitcommit="8a87f42fc6ca14d13454465490dbf47333918907"
 #source=("llvm-project::git+https://github.com/llvm/llvm-project.git#commit=${_gitcommit}"
@@ -103,7 +103,7 @@ build() {
         -D LLVM_BUILD_LLVM_DYLIB=ON \
         -D LLVM_LINK_LLVM_DYLIB=ON \
         -D LLVM_INSTALL_UTILS=ON \
-        -D LLVM_BUILD_DOCS=ON \
+        -D LLVM_BUILD_DOCS=OFF \
         -D LLVM_ENABLE_DOXYGEN=OFF \
         -D LLVM_ENABLE_SPHINX=ON \
         -D SPHINX_OUTPUT_HTML:BOOL=OFF \
@@ -131,9 +131,7 @@ check() {
 package_llvm-git() {
     pkgdesc="LLVM development version. includes clang and many other tools"
     depends=("llvm-libs-git=$pkgver-$pkgrel" 'perl')
-    optdepends=('python: for scripts'
-                'python-setuptools: for using lit = LLVM Integrated Tester'
-    )
+    optdepends=('python: for scripts')
     provides=(aur-llvm-git compiler-rt-git clang-git lldb-git lld-git polly-git
               llvm compiler-rt clang lldb polly lld )
     # A package always provides itself, so there's no need to provide llvm-git
