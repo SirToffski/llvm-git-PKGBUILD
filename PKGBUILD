@@ -22,7 +22,7 @@ arch=('x86_64')
 url="https://llvm.org/"
 license=('custom:Apache 2.0 with LLVM Exception')            
 makedepends=('git' 'cmake' 'ninja' 'libffi' 'libedit' 'ncurses' 'libxml2' 
-             'python-setuptools' 'ocaml' 'ocaml-ctypes' 'ocaml-findlib'
+             'python-setuptools' 'lldb' 'ocaml' 'ocaml-ctypes' 'ocaml-findlib'
              'python-sphinx' 'python-recommonmark' 'swig' 'python' 'python-six' 'lua53'
              'ocl-icd' 'opencl-headers' 'z3' 'jsoncpp' 'ocaml-stdlib-shims' 'llvm-git' 'llvm-libs-git')
 checkdepends=("python-psutil")
