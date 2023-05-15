@@ -26,12 +26,12 @@ makedepends=('git' 'cmake' 'ninja' 'libffi' 'libedit' 'ncurses' 'libxml2'
              'python-sphinx' 'python-recommonmark' 'swig' 'python' 'python-six' 'lua53'
              'ocl-icd' 'opencl-headers' 'z3' 'jsoncpp' 'ocaml-stdlib-shims' 'llvm-git' 'llvm-libs-git')
 checkdepends=("python-psutil")
-#_gitcommit="8a87f42fc6ca14d13454465490dbf47333918907"
-_branch='release/16.x'
-#source=("llvm-project::git+https://github.com/llvm/llvm-project.git#commit=${_gitcommit}"
+_gitcommit="ca39168a7c1cb8299786d697baaafcda9cf23e60"
+#_branch='release/16.x'
+source=("llvm-project::git+https://github.com/llvm/llvm-project.git#commit=${_gitcommit}"
 #source=("llvm-project::git+https://github.com/llvm/llvm-project.git"
-source=("lvm-project::git+https://github.com/llvm/llvm-project.git#branch=${_branch}"
-        "llvm-config.h")
+#source=("lvm-project::git+https://github.com/llvm/llvm-project.git#branch=${_branch}"
+#        "llvm-config.h")
 
 md5sums=('SKIP'
          '295c343dcd457dc534662f011d7cff1a')
@@ -93,6 +93,8 @@ build() {
         -B _build \
         -S "$srcdir"/llvm-project/llvm  \
         -G Ninja \
+        -D CMAKE_C_FLAGS="${CFLAGS}" \
+        -D CMAKE_CXX_FLAGS="${CXXFLAGS}" \
         -D CMAKE_BUILD_TYPE=Release \
         -D CMAKE_INSTALL_PREFIX=/usr \
         -D LLVM_BINUTILS_INCDIR=/usr/include \
@@ -115,6 +117,7 @@ build() {
         -D LLVM_ENABLE_PROJECTS="polly;lldb;lld;compiler-rt;clang-tools-extra;clang" \
         -D LLVM_LIT_ARGS="-sv --ignore-fail" \
         -D LLVM_USE_LINKER=lld \
+        -D LINK_POLLY_INTO_TOOLS=ON \
         -Wno-dev
 
     ninja -C _build $NINJAFLAGS
@@ -175,7 +178,7 @@ package_llvm-git() {
         cp "$srcdir"/llvm-config.h "$pkgdir"/usr/include/llvm/Config/llvm-config.h
     fi
 
-    _py="3.10"
+    _py=$([[ "$(python -V)" =~ Python[[:space:]]*([0-9]+.[0-9]+) ]] && echo ${BASH_REMATCH[1]})
     cd llvm-project
     # Install Python bindings and optimize them
     cp -a llvm/bindings/python/llvm  "$pkgdir"/usr/lib/python$_py/site-packages/
