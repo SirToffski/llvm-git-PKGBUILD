@@ -16,21 +16,18 @@
 
 
 pkgname=('llvm-git' 'llvm-libs-git' 'llvm-ocaml-git')
-pkgver=17.0.0_r461009.deca5e8f5038
+pkgver=18.0.0_r485431.8f76f1816ea6
 pkgrel=1
 arch=('x86_64')
 url="https://llvm.org/"
 license=('custom:Apache 2.0 with LLVM Exception')
-makedepends=('git' 'cmake' 'ninja' 'libffi' 'libedit' 'ncurses' 'libxml2'
+makedepends=('git' 'cmake' 'ninja' 'libffi' 'libedit' 'ncurses' 'libxml2' 
              'python-setuptools' 'lldb' 'ocaml' 'ocaml-ctypes' 'ocaml-findlib'
-             'python-sphinx' 'python-recommonmark' 'swig' 'python' 'python-six' 'lua53'
-             'ocl-icd' 'opencl-headers' 'z3' 'jsoncpp' 'ocaml-stdlib-shims' 'llvm-git' 'llvm-libs-git')
+             'python-sphinx' 'python-recommonmark' 'swig' 'python' 'python-six'
+             'python-myst-parser' 'lua53' 'ocl-icd' 'opencl-headers' 'z3'
+             'jsoncpp' 'ocaml-stdlib-shims')
 checkdepends=("python-psutil")
-_gitcommit="deca5e8f5038e70cbf2349e5df91109cae214ee7"
-#_branch='release/16.x'
-source=("llvm-project::git+https://github.com/llvm/llvm-project.git#commit=${_gitcommit}"
-#source=("llvm-project::git+https://github.com/llvm/llvm-project.git"
-#source=("lvm-project::git+https://github.com/llvm/llvm-project.git#branch=${_branch}"
+source=("llvm-project::git+https://github.com/llvm/llvm-project.git"
         "llvm-config.h")
 
 md5sums=('SKIP'
@@ -42,7 +39,6 @@ options=('staticlibs' '!lto')
 # NINJAFLAGS is an env var used to pass commandline options to ninja
 # NOTE: It's your responbility to validate the value of $NINJAFLAGS. If unsure, don't set it.
 # NINJAFLAGS="-j20"
-NINJAFLAGS="-j$(nproc)"
 
 _python_optimize() {
   python -m compileall "$@"
@@ -50,8 +46,19 @@ _python_optimize() {
   python -OO -m compileall "$@"
 }
 
+
+prepare() {
+
+
+  cd "$srcdir"/llvm-project/llvm/projects
+  git clone https://github.com/KhronosGroup/SPIRV-LLVM-Translator.git
+  
+}
+
+
+
 pkgver() {
-    cd llvm-project/llvm
+    cd "$srcdir"/llvm-project/llvm
 
     # This will almost match the output of `llvm-config --version` when the
     # LLVM_APPEND_VC_REV cmake flag is turned on. The only difference is
@@ -65,28 +72,7 @@ pkgver() {
 }
 
 build() {
-
-    export CC=clang
-    export CXX=clang++
-    export AR=llvm-ar
-    export AS=llvm-as
-    export NM=llvm-nm
-    export STRIP=llvm-strip
-    export OBJCOPY=llvm-objcopy
-    export OBJDUMP=llvm-objdump
-    export READELF=llvm-readelf
-    export HOSTCC=clang
-    export HOSTCXX=clang++
-    export HOSTAR=llvm-ar
-    export DEBUG_CFLAGS="-g"
-    export DEBUG_CXXFLAGS="-g"
-
-    export LD=ld.lld
-    export CC_LD=lld
-    export CXX_LD=lld
-    export HOSTLD=ld.lld
-    _extra_build_flags="-DLLVM_USE_LINKER=lld"
-
+    
     export CFLAGS+=" ${CPPFLAGS}"
     export CXXFLAGS+=" ${CPPFLAGS}"
     cmake \
@@ -114,6 +100,11 @@ build() {
         -D LLDB_USE_SYSTEM_SIX=1 \
         -D LLVM_ENABLE_PROJECTS="polly;lldb;lld;compiler-rt;clang-tools-extra;clang" \
         -D LLVM_LIT_ARGS="-sv --ignore-fail" \
+        -D LLVM_SPIRV_INCLUDE_TESTS=OFF \
+        -D LLVM_ENABLE_DUMP=ON \
+        -D LLVM_POLLY_LINK_INTO_TOOLS=ON \
+        -D LLVM_ENABLE_ZLIB=ON \
+        -D LLVM_ENABLE_ZSTD=ON \
         -Wno-dev
 
     ninja -C _build $NINJAFLAGS
@@ -133,18 +124,30 @@ package_llvm-git() {
     pkgdesc="LLVM development version. includes clang and many other tools"
     depends=("llvm-libs-git=$pkgver-$pkgrel" 'perl')
     optdepends=('python: for scripts')
-    provides=(aur-llvm-git compiler-rt-git clang-git lldb-git lld-git polly-git
-              llvm compiler-rt clang lldb polly lld )
+    provides=('aur-llvm-git'
+              'compiler-rt-git'
+              'clang-git'
+              'lldb-git'
+              'lld-git'
+              'polly-git'
+              'llvm'
+              'compiler-rt'
+              'clang'
+              'lldb'
+              'polly'
+              'lld'
+              'spirv-llvm-translator'
+              'spirv-llvm-translator-git')
     # A package always provides itself, so there's no need to provide llvm-git
-    conflicts=('llvm' 'compiler-rt' 'clang' 'lldb' 'polly' 'lld')
-
+    conflicts=('llvm' 'compiler-rt' 'clang' 'lldb' 'polly' 'lld' 'spirv-llvm-translator') 
+    
     DESTDIR="$pkgdir" ninja -C _build $NINJAFLAGS install
 
     # Include lit for running lit-based tests in other projects
     pushd llvm-project/llvm/utils/lit
     python setup.py install --root="$pkgdir" -O1
     popd
-
+    
     # Move analyzer scripts out of /usr/libexec
     mv "$pkgdir"/usr/libexec/{ccc,c++}-analyzer "$pkgdir"/usr/lib/clang/
     mv "$pkgdir"/usr/libexec/analyze-{cc,c++} "$pkgdir"/usr/lib/clang/
@@ -166,7 +169,7 @@ package_llvm-git() {
     else
         mv "$pkgdir"/usr/share/doc/llvm/ocaml-html "$srcdir"/ocaml.doc
     fi
-
+    
     if [[ $CARCH == x86_64 ]]; then
         # Needed for multilib (https://bugs.archlinux.org/task/29951)
         # Header stub is taken from Fedora
@@ -177,7 +180,6 @@ package_llvm-git() {
     _py=$([[ "$(python -V)" =~ Python[[:space:]]*([0-9]+.[0-9]+) ]] && echo ${BASH_REMATCH[1]})
     cd llvm-project
     # Install Python bindings and optimize them
-    cp -a llvm/bindings/python/llvm  "$pkgdir"/usr/lib/python$_py/site-packages/
     cp -a clang/bindings/python/clang  "$pkgdir"/usr/lib/python$_py/site-packages/
     _python_optimize "$pkgdir"/usr/lib/python$_py/site-packages
 
@@ -191,6 +193,7 @@ package_llvm-git() {
     install -Dm644 lld/LICENSE.TXT "$pkgdir"/usr/share/licenses/$pkgname/lld-LICENSE
     install -Dm644 lldb/LICENSE.TXT "$pkgdir"/usr/share/licenses/$pkgname/lldb-LICENSE
     install -Dm644 polly/LICENSE.TXT "$pkgdir"/usr/share/licenses/$pkgname/polly-LICENSE
+    install -Dm644 llvm/projects/SPIRV-LLVM-Translator/LICENSE.TXT "$pkgdir"/usr/share/licenses/$pkgname/spirv-llvm-translator-LICENSE
 }
 
 package_llvm-libs-git() {
@@ -209,7 +212,7 @@ package_llvm-libs-git() {
     # https://bugs.archlinux.org/task/28479
     install -d "$pkgdir"/usr/lib/bfd-plugins
     ln -s ../LLVMgold.so "$pkgdir"/usr/lib/bfd-plugins/LLVMgold.so
-
+    
     cd llvm-project/
     install -Dm644 llvm/LICENSE.TXT "$pkgdir"/usr/share/licenses/$pkgname/llvm-LICENSE
     install -Dm644 clang/LICENSE.TXT "$pkgdir"/usr/share/licenses/$pkgname/clang-LICENSE
@@ -218,6 +221,8 @@ package_llvm-libs-git() {
     install -Dm644 lld/LICENSE.TXT "$pkgdir"/usr/share/licenses/$pkgname/lld-LICENSE
     install -Dm644 lldb/LICENSE.TXT "$pkgdir"/usr/share/licenses/$pkgname/lldb-LICENSE
     install -Dm644 polly/LICENSE.TXT "$pkgdir"/usr/share/licenses/$pkgname/polly-LICENSE
+    install -Dm644 llvm/projects/SPIRV-LLVM-Translator/LICENSE.TXT "$pkgdir"/usr/share/licenses/$pkgname/spirv-llvm-translator-LICENSE
+    
 }
 
 package_llvm-ocaml-git() {
@@ -225,7 +230,7 @@ package_llvm-ocaml-git() {
     depends=("llvm-git=$pkgver-$pkgrel" "ocaml" 'ocaml-ctypes')
     conflicts=('llvm-ocaml')
     provides=("llvm-ocaml")
-
+    
     install -d "$pkgdir"/{usr/lib,usr/share/doc/$pkgname}
     cp -a "$srcdir"/ocaml.lib "$pkgdir"/usr/lib/ocaml
     cp -a "$srcdir"/ocaml.doc "$pkgdir"/usr/share/doc/$pkgname/html
