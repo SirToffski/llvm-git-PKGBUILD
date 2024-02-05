@@ -1,0 +1,60 @@
+# Maintainer: Laurent Carlier <lordheavym@gmail.com>
+
+pkgname=libclc-git
+pkgver=19.0.0_r488625.859b09da08c2
+pkgrel=1
+epoch=1
+pkgdesc="Library requirements of the OpenCL C programming language (git version)"
+arch=('any')
+url="http://libclc.llvm.org/"
+license=('MIT')
+conflicts=('libclc')
+provides=('libclc')
+makedepends=('clang-git' 'spirv-llvm-translator-git' 'polly-git' 'llvm-libs' 'python' 'ninja' 'cmake' 'git')
+source=('llvm-project::git+https://github.com/llvm/llvm-project.git#commit=859b09da08c2a47026ba0a7d2f21b7dca705864d')
+options=('!lto')
+md5sums=(SKIP)
+
+pkgver() {
+  cd llvm-project/llvm
+
+   # This will almost match the output of `llvm-config --version` when the
+  # LLVM_APPEND_VC_REV cmake flag is turned on. The only difference is
+  # dash being replaced with underscore because of Pacman requirements.
+  local _pkgver=$(awk -F 'MAJOR |MINOR |PATCH |)' \
+          'BEGIN { ORS="." ; i=0 } \
+           /set\(LLVM_VERSION_/ { print $2 ; i++ ; if (i==2) ORS="" } \
+           END { print "\n" }' \
+           CMakeLists.txt)_r$(git rev-list --count HEAD).$(git rev-parse --short HEAD)
+  echo "${_pkgver}"
+}
+
+prepare() {
+  cd llvm-project
+
+  #patch -Np1 -i ${srcdir}/libclc.patch
+  rm -rf libclc/build && mkdir libclc/build
+}
+
+build() {
+  cd llvm-project/libclc/build
+
+  export CXXFLAGS="${CXXFLAGS} -fno-lto"
+  export CFLAGS="${CFLAGS} -fno-lto"
+
+  cmake .. -G Ninja \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_INSTALL_DATADIR=lib \
+    -DLIBCLC_TARGETS_TO_BUILD="all"
+  ninja all
+
+
+}
+
+package() {
+  cd "$srcdir/llvm-project/libclc/build"
+  
+  DESTDIR="${pkgdir}" ninja install
+  install -Dm644 ../LICENSE.TXT "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}
