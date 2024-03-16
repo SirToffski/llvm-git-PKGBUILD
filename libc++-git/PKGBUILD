@@ -19,17 +19,17 @@ sha512sums=('SKIP')
 
 
 pkgver() {
-  cd llvm-project/llvm
+    cd "$srcdir"/llvm-project/cmake/Modules
 
-   # This will almost match the output of `llvm-config --version` when the
-  # LLVM_APPEND_VC_REV cmake flag is turned on. The only difference is
-  # dash being replaced with underscore because of Pacman requirements.
-  local _pkgver=$(awk -F 'MAJOR |MINOR |PATCH |)' \
-          'BEGIN { ORS="." ; i=0 } \
-           /set\(LLVM_VERSION_/ { print $2 ; i++ ; if (i==2) ORS="" } \
-           END { print "\n" }' \
-           CMakeLists.txt)_r$(git rev-list --count HEAD).$(git rev-parse --short HEAD)
-  echo "${_pkgver}"
+    # This will almost match the output of `llvm-config --version` when the
+    # LLVM_APPEND_VC_REV cmake flag is turned on. The only difference is
+    # dash being replaced with underscore because of Pacman requirements.
+    local _pkgver=$(awk -F 'MAJOR |MINOR |PATCH |)' \
+            'BEGIN { ORS="." ; i=0 } \
+             /set\(LLVM_VERSION_/ { print $2 ; i++ ; if (i==2) ORS="" } \
+             END { print "\n" }' \
+             LLVMVersion.cmake)_r$(git rev-list --count HEAD).$(git rev-parse --short HEAD)
+    echo "$_pkgver"
 }
 
 prepare() {
